@@ -1,14 +1,25 @@
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph, Table, TableStyle, HRFlowable, KeepTogether, Image
+from reportlab.lib.utils import ImageReader
 
-from utils.pdf_styles import (
+from utils.pdf_generator.pdf_styles import (
     BODY_STYLE,
     CAPTION_STYLE,
     HEADING_STYLE,
     INSIGHT_STYLE,
     SUBHEADING_STYLE,
     TABLE_HEADER,
+)
+
+from reportlab.lib.colors import HexColor
+
+import os
+
+from utils.pdf_generator.pdf_styles import (
+    PRIMARY,
+    SUBTEXT,
+    TEXT,
 )
 
 
@@ -66,9 +77,7 @@ def create_styled_table(data):
     if not data:
         return Table([["No Data Available"]])
 
-    # --------------------------------------------------
     # Convert every cell into a Paragraph so text wraps
-    # --------------------------------------------------
 
     formatted_data = []
 
@@ -87,9 +96,7 @@ def create_styled_table(data):
 
         formatted_data.append(formatted_row)
 
-    # --------------------------------------------------
     # Dynamic column width calculation
-    # --------------------------------------------------
 
     num_cols = len(formatted_data[0])
 
@@ -111,9 +118,7 @@ def create_styled_table(data):
         repeatRows=1,
     )
 
-    # --------------------------------------------------
     # Font size based on number of columns
-    # --------------------------------------------------
 
     if num_cols <= 5:
         font_size = 9
@@ -286,3 +291,89 @@ def create_ai_insight_box(text):
     ))
     
     return table
+
+
+def draw_header_footer(canvas, doc):
+    """
+    Draw corporate header and footer.
+    """
+
+    canvas.saveState()
+
+    page_width, page_height = doc.pagesize
+
+    # Header
+
+    logo_path = "assets/logo.png"
+
+    if os.path.exists(logo_path):
+        canvas.drawImage(
+            ImageReader(logo_path),
+            doc.leftMargin,
+            page_height - 72,
+            width=0.80 * inch,
+            height=0.80 * inch,
+            preserveAspectRatio=True,
+            mask="auto",
+        )
+
+    text_x = doc.leftMargin + 0.95 * inch
+
+    canvas.setFillColor(PRIMARY)
+    canvas.setFont("Helvetica-Bold", 18)
+
+    canvas.drawString(
+        text_x,
+        page_height - 38,
+        "ABC Analytics Pvt Ltd",
+    )
+
+    canvas.setFillColor(SUBTEXT)
+    canvas.setFont("Helvetica", 10)
+
+    canvas.drawString(
+        text_x,
+        page_height - 58,
+        "Data Driven Decision with AI",
+    )
+
+    canvas.setStrokeColor(colors.black)
+
+    canvas.line(
+        doc.leftMargin,
+        page_height - 82,
+        page_width - doc.rightMargin,
+        page_height - 82,
+    )
+
+    # Footer
+
+    canvas.line(
+        doc.leftMargin,
+        32,
+        page_width - doc.rightMargin,
+        32,
+    )
+
+    canvas.setFont("Helvetica", 10)
+    canvas.setFillColor(TEXT)
+
+    canvas.drawString(
+        doc.leftMargin,
+        14,
+        "ABC Analytics Pvt Ltd",
+    )
+
+    canvas.drawCentredString(
+        page_width / 2,
+        14,
+        "Confidential",
+    )
+
+    canvas.drawRightString(
+        page_width - doc.rightMargin,
+        14,
+        f"Page {canvas.getPageNumber()}",
+    )
+
+    canvas.restoreState()

@@ -1,8 +1,8 @@
 from reportlab.platypus import Paragraph, Spacer
 from reportlab.lib.units import inch
 
-from utils.pdf_components import create_section_header
-from utils.pdf_styles import BODY_STYLE
+from utils.pdf_generator.pdf_components import create_section_header
+from utils.pdf_generator.pdf_styles import BODY_STYLE
 
 
 def create_table_of_contents():

@@ -42,9 +42,22 @@ class ReportAgent(BaseAgent):
 
         report = response.content
 
-        # Gemini sometimes returns a list of content blocks
         if isinstance(report, list):
             report = report[0]["text"]
+
+        report = report.strip()
+
+        # Remove markdown fences if the model returns them
+        if report.startswith("```markdown"):
+            report = report.replace("```markdown", "", 1)
+
+        if report.startswith("```"):
+            report = report.replace("```", "", 1)
+
+        if report.endswith("```"):
+            report = report[:-3]
+
+        report = report.strip()
 
         self.memory.store_report(
             "markdown",

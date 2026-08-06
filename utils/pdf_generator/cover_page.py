@@ -4,7 +4,7 @@ from reportlab.lib.units import inch
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import ParagraphStyle
 
-from utils.pdf_styles import BODY_STYLE, TITLE_STYLE
+from utils.pdf_generator.pdf_styles import BODY_STYLE, TITLE_STYLE
 
 
 COVER_TITLE = ParagraphStyle(
@@ -35,11 +35,17 @@ COVER_FOOTER = ParagraphStyle(
 
 def create_cover_page(report_metadata, generated_on):
 
-    dataset = report_metadata.get("dataset_info", {})
+    dataset = report_metadata.get(
+    "dataset_info",
+    report_metadata,
+    )
 
     rows = dataset.get("rows", "-")
     columns = dataset.get("columns", "-")
-    duplicates = dataset.get("duplicates_rows", "-")
+    duplicates = dataset.get(
+    "duplicate_rows",
+    dataset.get("duplicates_rows", "-"),
+    )
 
     story = []
 
