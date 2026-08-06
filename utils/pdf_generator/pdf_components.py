@@ -5,6 +5,7 @@ from reportlab.lib.utils import ImageReader
 
 from utils.pdf_generator.pdf_styles import (
     BODY_STYLE,
+    BULLET_STYLE,
     CAPTION_STYLE,
     HEADING_STYLE,
     INSIGHT_STYLE,
@@ -46,6 +47,16 @@ def create_figure_caption(text):
 
 def create_narrative(text):
     return Paragraph(text, BODY_STYLE)
+
+def create_bullet(text):
+    """
+    Render a bullet point using the dedicated bullet style.
+    """
+
+    return Paragraph(
+        text,
+        BULLET_STYLE,
+    )
 
 
 def create_insight_box(text):

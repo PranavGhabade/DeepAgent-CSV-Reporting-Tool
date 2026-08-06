@@ -11,6 +11,7 @@ from utils.pdf_generator.pdf_components import (
     create_section_header,
     create_subheading,
     create_narrative,
+    create_bullet,
 )
 
 from utils.pdf_generator.helpers import (
@@ -118,16 +119,29 @@ def render_business_insights(lines):
 
                     paragraph_buffer = []
 
+                # story.append(
+                #     create_bullet(
+                #         "• " + clean_inline_markdown(
+                #             strip_bullet(line)
+                #         )
+                #     )
+                # )
+
+                # story.append(
+                #     Spacer(1, 0.05 * inch)
+                # )
+
+
                 story.append(
                     create_narrative(
-                        "• " + clean_inline_markdown(
+                        clean_inline_markdown(
                             strip_bullet(line)
                         )
                     )
                 )
 
                 story.append(
-                    Spacer(1, 0.05 * inch)
+                    Spacer(1, 0.10 * inch)
                 )
 
                 continue

@@ -52,6 +52,15 @@ def generate_pdf_report(memory):
 
     report_text = memory.get_report("markdown")
 
+    # Save Markdown Report (Debug)
+
+    with open(
+        "outputs/report.md",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(report_text)
+
     chart_paths = memory.get_analysis("visualizations") or {}
 
     profile = memory.get_analysis("profile") or {}
