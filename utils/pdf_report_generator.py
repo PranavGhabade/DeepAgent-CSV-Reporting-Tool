@@ -40,7 +40,10 @@ OUTPUT_PDF = os.path.join(
 )
 
 
-def generate_pdf_report(memory):
+def generate_pdf_report(
+    memory,
+    output_pdf=OUTPUT_PDF,
+):
     """
     Generate the final PDF report.
     """
@@ -51,6 +54,12 @@ def generate_pdf_report(memory):
     )
 
     report_text = memory.get_report("markdown")
+    with open(
+        "outputs/report.md",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(report_text)
 
     # Save Markdown Report (Debug)
 
@@ -139,7 +148,7 @@ def generate_pdf_report(memory):
     )
 
     doc = SimpleDocTemplate(
-        OUTPUT_PDF,
+        output_pdf,
         rightMargin=0.6 * inch,
         leftMargin=0.6 * inch,
         topMargin=1.15 * inch,
@@ -152,4 +161,4 @@ def generate_pdf_report(memory):
     onLaterPages=draw_header_footer,
     )
 
-    return OUTPUT_PDF
+    return output_pdf
