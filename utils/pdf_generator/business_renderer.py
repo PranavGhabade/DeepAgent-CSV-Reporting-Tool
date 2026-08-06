@@ -37,82 +37,108 @@ def render_business_insights(lines):
 
     for raw_line in lines:
 
-        line = raw_line.strip()
+        raw_line = raw_line.strip()
 
-        if not line:
+        if not raw_line:
             continue
 
         # -----------------------------------------
-        # New Heading
+        # Split multiple bullets generated in one line
         # -----------------------------------------
 
-        if is_heading(line):
+        if "•" in raw_line:
 
-            # Flush previous paragraph
-            if paragraph_buffer:
+            segments = [
+                f"• {part.strip()}"
+                for part in raw_line.split("•")
+                if part.strip()
+            ]
+
+        else:
+
+            segments = [raw_line]
+
+        # -----------------------------------------
+        # Process each segment independently
+        # -----------------------------------------
+
+        for line in segments:
+
+            # -----------------------------------------
+            # New Heading
+            # -----------------------------------------
+
+            if is_heading(line):
+
+                # Flush previous paragraph
+                if paragraph_buffer:
+
+                    story.append(
+                        create_narrative(
+                            " ".join(paragraph_buffer)
+                        )
+                    )
+
+                    story.append(
+                        Spacer(1, 0.12 * inch)
+                    )
+
+                    paragraph_buffer = []
+
+                story.append(
+                    create_subheading(
+                        get_heading_text(line)
+                    )
+                )
+
+                story.append(
+                    Spacer(1, 0.05 * inch)
+                )
+
+                continue
+
+            # -----------------------------------------
+            # Bullet Point
+            # -----------------------------------------
+
+            if is_bullet(line):
+
+                # Flush paragraph before bullets
+                if paragraph_buffer:
+
+                    story.append(
+                        create_narrative(
+                            " ".join(paragraph_buffer)
+                        )
+                    )
+
+                    story.append(
+                        Spacer(1, 0.08 * inch)
+                    )
+
+                    paragraph_buffer = []
 
                 story.append(
                     create_narrative(
-                        " ".join(paragraph_buffer)
+                        "• " + clean_inline_markdown(
+                            strip_bullet(line)
+                        )
                     )
                 )
 
                 story.append(
-                    Spacer(1, 0.12 * inch)
+                    Spacer(1, 0.05 * inch)
                 )
 
-                paragraph_buffer = []
+                continue
 
-            story.append(
-                create_subheading(
-                    get_heading_text(line)
-                )
+            # -----------------------------------------
+            # Normal Paragraph
+            # -----------------------------------------
+
+            paragraph_buffer.append(
+                clean_inline_markdown(line)
             )
-
-            story.append(
-                Spacer(1, 0.05 * inch)
-            )
-
-            continue
-
-        # -----------------------------------------
-        # Bullet Point
-        # -----------------------------------------
-
-        if is_bullet(line):
-
-            # Flush paragraph before bullets
-            if paragraph_buffer:
-
-                story.append(
-                    create_narrative(
-                        " ".join(paragraph_buffer)
-                    )
-                )
-
-                story.append(
-                    Spacer(1, 0.08 * inch)
-                )
-
-                paragraph_buffer = []
-
-            story.append(
-                create_narrative(
-                    "• " + clean_inline_markdown(
-                        strip_bullet(line)
-                    )
-                )
-            )
-
-            continue
-
-        # -----------------------------------------
-        # Normal Paragraph
-        # -----------------------------------------
-
-        paragraph_buffer.append(
-            clean_inline_markdown(line)
-        )
 
     # -----------------------------------------
     # Flush remaining paragraph

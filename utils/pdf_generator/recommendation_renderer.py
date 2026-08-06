@@ -14,11 +14,6 @@ from utils.pdf_generator.pdf_components import (
     create_narrative,
 )
 
-from utils.pdf_generator.helpers import (
-    strip_bullet,
-    clean_inline_markdown,
-)
-
 
 def render_recommendations(lines):
     """
@@ -35,28 +30,74 @@ def render_recommendations(lines):
 
     for raw_line in lines:
 
-        line = raw_line.strip()
+        raw_line = raw_line.strip()
 
-        if not line:
+        if not raw_line:
             continue
 
-        text = clean_inline_markdown(
-            strip_bullet(line)
-        )
+        # -----------------------------------------
+        # Split multiple bullets generated in one line
+        # -----------------------------------------
 
-        # Remove existing numbering if the LLM already generated it
-        text = re.sub(r"^\d+\.\s*", "", text)
+        if "•" in raw_line:
 
-        story.append(
-            create_narrative(
-                f"<b>{recommendation_number}.</b> {text}"
+            recommendations = [
+                part.strip()
+                for part in raw_line.split("•")
+                if part.strip()
+            ]
+
+        else:
+
+            recommendations = [raw_line]
+
+        # -----------------------------------------
+        # Process each recommendation
+        # -----------------------------------------
+
+        for recommendation in recommendations:
+
+            text = recommendation
+
+            # Remove existing numbering like:
+            # 1. Recommendation
+            text = re.sub(
+                r"^\d+\.\s*",
+                "",
+                text,
             )
-        )
 
-        story.append(
-            Spacer(1, 0.08 * inch)
-        )
+            # Remove markdown bullets
+            text = re.sub(
+                r"^[-*]\s*",
+                "",
+                text,
+            )
 
-        recommendation_number += 1
+            # Remove any remaining bullet character
+            text = text.replace("•", "").strip()
+
+            # Remove markdown formatting
+            text = (
+                text.replace("**", "")
+                    .replace("*", "")
+                    .replace("`", "")
+                    .strip()
+            )
+
+            if not text:
+                continue
+
+            story.append(
+                create_narrative(
+                    f"<b>{recommendation_number}.</b> {text}"
+                )
+            )
+
+            story.append(
+                Spacer(1, 0.12 * inch)
+            )
+
+            recommendation_number += 1
 
     return story
