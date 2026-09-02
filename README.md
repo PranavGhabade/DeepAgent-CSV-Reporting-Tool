@@ -49,46 +49,6 @@ The system uses specialized agents for different stages of the analysis pipeline
 └── requirements.txt # Project dependencies
 ```
 
-## ⚙️ Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/PranavGhabade/DeepAgent-CSV-Reporting-Tool.git
-cd DeepAgent-CSV-Reporting-Tool
-```
-
-Create and activate a virtual environment:
-
-```bash
-python -m venv .venv
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Configure your LLM API credentials as required by the project.
-
-## ▶️ Usage
-
-Run the application:
-
-```bash
-python app.py
-```
-
-The application provides two primary workflows:
-
-```text
-1. Generate Complete Report
-2. Ask Dataset Query
-```
-
-Generated reports, charts, and other outputs are stored in the `outputs/` directory.
-
 ## 🛠️ Tech Stack
 
 - **Python**
